@@ -1,0 +1,9 @@
+server.port = 8080
+# Az adatbázis adatait nem szeretném feltölteni GitHub-ra
+# Ezt a fájlt át kell nevezni application.properties-re, 
+# és be kell helyettesíteni a <> jelek közötti adatokat
+# Az adatbázis szerkezetét az mcservers.sql fájl írja le
+spring.datasource.url=jdbc:mariadb://<ip>:<port>/mcservers
+spring.datasource.driverClassName=org.mariadb.jdbc.Driver
+spring.datasource.username=<felhasználó>
+spring.datasource.password=<jelszó>
