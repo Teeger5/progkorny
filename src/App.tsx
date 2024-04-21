@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import {j} from "vite/dist/node/types.d-aGj9QkWt";
+import {j, l} from "vite/dist/node/types.d-aGj9QkWt";
 
 const host = "http://localhost:8080";
 
@@ -13,7 +13,10 @@ function get(route : string) {
 function post(route : string, data : Object) {
 	return fetch(host + route, {
 		method: "POST",
-		body: data
+		body: JSON.stringify(data),
+		headers: {
+			"Content-Type": "application/json"
+		}
 	})
 }
 
@@ -27,7 +30,7 @@ let VERSIONS = new Array<string>();
 
 function Tag({  onClick, text, selected }) {
 //	const [selected, setSelected] = useState(false);
-	console.log(`Tag: ${text} -> ${selected}`);
+//	console.log(`Tag: ${text} -> ${selected}`);
 	return (
 		<div onClick={onClick} style={{
 			backgroundColor: selected == "1" ? "#4a4" : "transparent"
@@ -56,51 +59,110 @@ function Versions() {
 }
 
 function AddServer() {
-	const [version, setVersion] = useState("");
-	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
-	const [address, setAddress] = useState("");
-	const [port, setPort] = useState(25565);
-	const [maxPlayers, setMaxPlayers] = useState(20);
-	/*	const onVersionChanged = (value : string) => {
-			version = value;
-		}*/
+	const [data, setData] = useState({
+		version: '',
+		name: '',
+		description: '',
+		address: '',
+		port: 25565,
+		maxPlayers: 20
+	});
+	const [msg, setMsg] = useState({
+		msg: "",
+		color: "transparent"
+	});
+
+	const handleInputChange = (event) => {
+		const { name, value } = event.target;
+		console.log(`new server data change: ${name} -> ${value}`);
+		setData(prevData => ({
+			...prevData,
+			[name]: name === 'port' || name === 'maxPlayers' ? parseInt(value) : value
+		}));
+		console.log("data -> " + JSON.stringify(data));
+	};
+
+	if (VERSIONS.length > 0 && data.version === "") {
+		setData(prevData => ({
+			...prevData,
+			version: VERSIONS[0]
+		}));
+	}
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		console.log("new server data: " + JSON.stringify(data));
+		post("/servers", data)
+			.then(async resp => {
+				let text = "Szerver hozzáadva 😎"; //
+				let color = "rgba(64, 160, 64, 0.5)";
+				if (resp.status === 409) {
+					text = `MEzen a címen (${data.address}) már található regisztrált szerver`;
+					color = "rgba(160, 64, 64, 0.5)";
+				}
+				else if (resp.status !== 200) {
+					text = await resp.text();
+					color = "rgba(160, 64, 64, 0.5)";
+				}
+				setMsg({
+					msg: text,
+					color: color
+				});
+			});
+	};
 	return (
 		<div>
-			<form>
+			<form style={{
+				display: "flex",
+				flexFlow: "column",
+				justifyContent: "stretch",
+				alignItems: "stretch",
+				alignContent: "stretch",
+				gap: 4
+			}}>
 				<table>
-					<tbody>
+					<tbody style={{
+						display: "table"
+					}}>
 					<tr>
 						<td><label>Név:</label></td>
 						<td><input
+							name="name"
 							type="text"
-							onChange={(event) => setName(event.target.value)}/></td>
+							onChange={handleInputChange}/></td>
 					</tr>
 					<tr>
 						<td>Max játékosszám:<label></label></td>
 						<td><input
+							name="maxPlayers"
 							type="number"
-							onChange={(event) => setMaxPlayers(event.target.value)}/></td>
+							defaultValue="20"
+							onChange={handleInputChange}/></td>
 					</tr>
 					<tr>
 						<td><label>Verzió:</label></td>
-						<td><select onChange={(event) => setVersion(event.target.value)}>
-							{VERSIONS.map((k) => (
+						<td><select
+							name="version"
+							defaultValue={VERSIONS.length == 0 ? "" : VERSIONS[0]}
+							onChange={handleInputChange}>
+							{VERSIONS.map((k, i) => (
 								<option key={k} value={k}>{k}</option>
 							))}
 						</select></td>
 					</tr>
 					<tr>
-						<td>Elérés:<label></label></td>
+						<td><label>Elérés:</label></td>
 						<td><input
+							name="address"
 							type="text"
-							onChange={(event) => setAddress(event.target.value)}/>
+							onChange={handleInputChange}/>
 							:<input
+								name="port"
 								type="number" style={{
 								fontFamily: "monospace"
 							}}
 								defaultValue="25565"
-								onChange={(event) => setPort(parseInt(event.target.value))}/></td>
+								onChange={handleInputChange}/></td>
 					</tr>
 					<tr>
 						<td>Verziók:</td>
@@ -110,24 +172,19 @@ function AddServer() {
 				</table>
 				<h3>Leírás:</h3>
 				<textarea
-					onChange={(event) => setDescription(event.target.value)}>
+					name="description"
+					rows="8"
+					onChange={handleInputChange}>
 				</textarea>
 				<div
 					style={{
 						backgroundColor: "#4a4",
 						cursor: "pointer"
 					}}
-					onClick={() => {
-						let data = {
-							name: name,
-							address: address,
-							port: port,
-							version: version,
-							max_players: maxPlayers,
-							description: description
-						};
-						console.log("new server data: " + JSON.stringify(data));
-					}}>Hozzáadás</div>
+					onClick={handleSubmit}>Hozzáadás</div>
+				<div style={{
+					backgroundColor: msg.color
+				}}>{msg.msg}</div>
 			</form>
 		</div>
 	)
@@ -135,7 +192,6 @@ function AddServer() {
 
 export default function App() {
 	const [count, setCount] = useState(0)
-//	const [versions, setVersions] = useState(Array<string>);
 
 	const [versions, setVersions] = useState(new Array<string>());
 	const onVersionsReceived = (json : Array<string>) => {
@@ -151,7 +207,7 @@ export default function App() {
 				onVersionsReceived(json);
 				console.log("available versions: " + JSON.stringify(VERSIONS));
 			});
-	}, []);
+		}, []);
 	return (
 		<>
 			<AddServer />

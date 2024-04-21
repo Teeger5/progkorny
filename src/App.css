@@ -1,42 +1,35 @@
 #root {
+  display: flex;
+  flex-flow:column;
+  align-items: center;
+  justify-content: center;
+  align-content: stretch;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+tr:nth-child(odd) {
+  background-color: #444;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+/*
+td {
+  display: flex;
+  flex-flow: row;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+*/
+td > label {
+  align-self: end;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+td > input {
+  width: 100%;
 }
 
-.card {
-  padding: 2em;
+.form-value {
+  align-self: start;
+  width: 100%;
 }
 
-.read-the-docs {
-  color: #888;
+textarea {
 }
