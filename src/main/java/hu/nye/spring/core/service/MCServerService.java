@@ -1,11 +1,13 @@
 package hu.nye.spring.core.service;
 
 import hu.nye.spring.core.entity.MCVersionEntity;
-import hu.nye.spring.core.model.MCServer;
 import hu.nye.spring.core.repistory.IMCVersionRepository;
+import hu.nye.spring.core.repistory.MCServerSpecification;
+import hu.nye.spring.core.request.MCFiltersRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import hu.nye.spring.core.entity.MCServerEntity;
@@ -26,13 +28,18 @@ public class MCServerService implements IMCServerService {
 	private IMCVersionRepository mcVersionRepository;
 
 	@Override
-	public MCServerEntity saveMCServer(MCServerRequest request) {
+	public ResponseEntity saveMCServer(MCServerRequest request) {
 		var version = mcVersionRepository.findByName(request.getVersion())
 				.orElseThrow(() -> new ResponseStatusException(
-						HttpStatusCode.valueOf(404),
-						"Version '" + request.getVersion() + "' not present in the database"));
+						HttpStatus.UNPROCESSABLE_ENTITY,
+						"'" + request.getVersion() + "' verzió nem ismert"));
 		var mcServerEntity = MCServerEntity.fromRequest(request, version);
-		return mcServerRepository.save(mcServerEntity);
+		if (mcServerRepository.existsByAddress(request.getAddress())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body(request.getAddress() + " címen már van regisztrált szerver.");
+		}
+		mcServerRepository.save(mcServerEntity);
+		return ResponseEntity.ok("Szerver hozzáadva \uD83D\uDE0E");
 	}
 
 	@Override
@@ -53,6 +60,11 @@ public class MCServerService implements IMCServerService {
 	}
 
 	@Override
+	public void deleteMCServerByAddress(String address) {
+
+	}
+
+	@Override
 	public List<String> getMCVersions() {
 		return ((List<MCVersionEntity>) mcVersionRepository.findAll())
 				.stream()
@@ -64,7 +76,22 @@ public class MCServerService implements IMCServerService {
 		return ((List<MCServerEntity>) mcServerRepository.findAll());
 	}
 
-    /*public void printLoggedUser(){
+	@Override
+	public List<MCServerEntity> getMCServersByFilters (MCFiltersRequest request) {
+		if (request.getVersions() != null && !request.getVersions().isEmpty()) {
+			var specification = Specification.where(MCServerSpecification
+					.hasVersion(mcVersionRepository.findAllByName(request.getVersions())));
+			return mcServerRepository.findAll(specification);
+		}
+		return getAllMCServers();
+	}
+
+	@Override
+	public boolean existsByAddress(String address) {
+		return mcServerRepository.existsByAddress(address);
+	}
+
+	/*public void printLoggedUser(){
         System.out.println(userRepository.getLoggedUser());
     }
 

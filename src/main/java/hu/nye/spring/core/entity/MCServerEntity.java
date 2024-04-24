@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,17 +19,26 @@ import lombok.Setter;
 public class MCServerEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+/*			strategy = GenerationType.AUTO,
+			generator = "native")
+	@GenericGenerator(
+			name = "native",
+			strategy = "native")*/
 	private Long id;
+	@Column(nullable = false, length = 120)
 	private String name;
+	@Column(nullable = false, unique = true, length = 120)
 	private String address;
+	@Column(length = 512)
 	private String description;
 	@ManyToOne
-	@JoinColumn(name = "version", referencedColumnName = "id")
+	@JoinColumn(name = "version", referencedColumnName = "id", nullable = false)
 	private MCVersionEntity version;
-	private int port;
-	@Column(name = "max_players")
-	private int maxPlayers;
+	@Column(nullable = false)
+	private Integer port;
+	@Column(name = "max_players", nullable = false)
+	private Integer maxPlayers;
 
 	/**
 	 * Frissíti ennek az objektumnak az értékeit

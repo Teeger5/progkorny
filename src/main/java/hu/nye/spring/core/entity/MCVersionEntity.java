@@ -1,5 +1,6 @@
 package hu.nye.spring.core.entity;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
+/**
+ * Ez az osztály a versions táblát írja le
+ * Ez idegenkulcsként kapcsolódik a servers táblához
+ */
 @Entity
 @Table(name = "versions")
 @AllArgsConstructor
@@ -14,7 +19,7 @@ import java.util.Set;
 public class MCVersionEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	@Getter
@@ -23,16 +28,16 @@ public class MCVersionEntity {
 
 	@OneToMany(mappedBy = "version")
 	private Set<MCServerEntity> servers;
-/*
-	public static MCVersionEntity from(String name) {
-		return new MCVersionEntity(null, name, null)
-	}*/
 
 	/**
-	 * Visszaadja a nevet, amiben kicseréli a '.'-okat '_'-ra
-	 * @return az átalakított név
+	 * Ez megváltozataja a JSON-reprezentációját az objektumnak
+	 * Azaz, ha ez a metódus egy String-et ad vissza,
+	 * akkor a JSON-ben is egy String jelenik meg,
+	 * nem a teljes objektum átalakítva
+	 * @return a verzió neve, mert csak ennek kell megjelennie
 	 */
-	public String getVersionID() {
-		return name.replace('.', '_');
+	@JsonValue
+	public String getName() {
+		return name;
 	}
 }

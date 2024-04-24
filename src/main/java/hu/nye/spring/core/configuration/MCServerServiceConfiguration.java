@@ -7,12 +7,24 @@ import org.springframework.context.annotation.PropertySource;
 
 import hu.nye.spring.core.model.MCServer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Beállításokért felelős osztály
+ * Az EnableWebMcv a CORS engedélyezéséhez kell,
+ * ami a webes felület működéséhez kell
+ */
 @Configuration
 @PropertySource(value = "application.properties")
-@Slf4j
-public class MCServerServiceConfiguration {
-/*
+@EnableWebMvc
+public class MCServerServiceConfiguration implements WebMvcConfigurer {
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/*");
+	}
+	/*
     @Value("${mcserver.name}")
     private String name;
     @Value("${mcserver.address}")

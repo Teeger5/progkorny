@@ -1,14 +1,23 @@
 package hu.nye.spring.core.service;
 
 import hu.nye.spring.core.entity.MCServerEntity;
-import hu.nye.spring.core.entity.MCVersionEntity;
+import hu.nye.spring.core.request.MCFiltersRequest;
 import hu.nye.spring.core.request.MCServerRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface IMCServerService {
 
-	MCServerEntity saveMCServer(MCServerRequest userRequest);
+	/**
+	 * Szerver hozzáadása az adatbázishoz
+	 * true-t ad vissza, ha sikerült, és létezik az adatbázisban,
+	 * false-t, ha az INSERT után nem található
+	 *
+	 * @param userRequest a kérés adatai
+	 * @return sikerült-e hozzáadni az adatbázishoz
+	 */
+	ResponseEntity saveMCServer(MCServerRequest userRequest);
 
 	MCServerEntity getMCServerById(Long id);
 
@@ -16,7 +25,13 @@ public interface IMCServerService {
 
 	void deleteMCServerById(Long id);
 
+	void deleteMCServerByAddress(String address);
+
 	List<String> getMCVersions();
 
-	public List<MCServerEntity> getAllMCServers();
+	List<MCServerEntity> getAllMCServers();
+
+	List<MCServerEntity> getMCServersByFilters(MCFiltersRequest request);
+
+	boolean existsByAddress(String address);
 }
