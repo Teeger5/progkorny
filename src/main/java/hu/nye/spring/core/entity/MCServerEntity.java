@@ -1,14 +1,14 @@
 package hu.nye.spring.core.entity;
 
-import hu.nye.spring.core.repistory.IMCVersionRepository;
 import hu.nye.spring.core.request.MCServerRequest;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.*;
+
+/**
+ * Ez az adatbázis servers tábláját írja le
+ * Az ID-t inkább nem küldjük ki
+ * A törlés és a frissítés iknább a cím alapján történik majd
+ */
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "servers")
 public class MCServerEntity {
 
+	@Getter(AccessLevel.NONE)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 /*			strategy = GenerationType.AUTO,

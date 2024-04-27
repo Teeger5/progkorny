@@ -1,19 +1,17 @@
 package hu.nye.spring.core.controller;
 
-import hu.nye.spring.core.entity.MCVersionEntity;
+import hu.nye.spring.core.entity.MCServerEntity;
 import hu.nye.spring.core.request.MCFiltersRequest;
+import hu.nye.spring.core.request.MCServerRequest;
+import hu.nye.spring.core.service.IMCServerService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import hu.nye.spring.core.entity.MCServerEntity;
-import hu.nye.spring.core.request.MCServerRequest;
-import hu.nye.spring.core.service.IMCServerService;
-
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -29,7 +27,7 @@ public class MCServerController {
 	 * @return
 	 */
 	@PostMapping("/servers")
-	public ResponseEntity saveMCServer(@RequestBody MCServerRequest request) {
+	public ResponseEntity saveMCServer(@Valid  @RequestBody MCServerRequest request) {
 		return mcServerService.saveMCServer(request);
 	}
 
@@ -59,9 +57,18 @@ public class MCServerController {
 		return mcServerService.getMCServerById(id);
 	}
 
-	@DeleteMapping("/servers/{id}")
-	public void deleteMCServerById(@PathVariable("id") Long id) {
-		mcServerService.deleteMCServerById(id);
+	@DeleteMapping("/servers/{address}")
+	public ResponseEntity<Object> eleteMCServerByAddress(@PathVariable("address") String address) {
+		if (!mcServerService.existsByAddress(address)) {
+			mcServerService.deleteMCServerByAddress(address);
+			if (mcServerService.existsByAddress(address)) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			}
+			return ResponseEntity.ok().build();
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
 	}
 
 	@PatchMapping("/servers/{id}")
@@ -70,7 +77,7 @@ public class MCServerController {
 	}
 
 	@GetMapping("/versions")
-	public List<String> getVersions() {
-		return mcServerService.getMCVersions();
+	public List<Object[]> getVersions() {
+		return mcServerService.getMCServerCountsByVersions();
 	}
 }

@@ -29,6 +29,8 @@ public interface IMCServerService {
 
 	List<String> getMCVersions();
 
+	List<Object[]> getMCServerCountsByVersions();
+
 	List<MCServerEntity> getAllMCServers();
 
 	List<MCServerEntity> getMCServersByFilters(MCFiltersRequest request);
