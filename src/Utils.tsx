@@ -5,7 +5,7 @@ function get(route : string) {
 	return fetch(host + route)
 }
 
-function post(route : string, data : Object) {
+export function post(route : string, data : Object) {
 	return fetch(host + route, {
 		method: "POST",
 		body: JSON.stringify(data),

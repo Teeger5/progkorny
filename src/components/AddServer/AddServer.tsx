@@ -1,5 +1,6 @@
 import {useState} from "react";
 import {VERSION_NAMES, VERSIONS} from "../../App.tsx";
+import {post} from "../../Utils.tsx";
 
 export function AddServer({ onSuccess }) {
 	const [data, setData] = useState<ServerData>({
@@ -12,12 +13,13 @@ export function AddServer({ onSuccess }) {
 	});
 	const [msg, setMsg] = useState({
 		msg: "",
-		color: "transparent"
+		color: "transparent",
+		list: null
 	});
 
 	const handleInputChange = (event) => {
 		const { name, value } = event.target;
-		console.log(`new server data change: ${name} -> ${value}`);
+//		console.log(`new server data change: ${name} -> ${value}`);
 		setData(prevData => ({
 			...prevData,
 			[name]: name === 'port' || name === 'maxPlayers' ? parseInt(value) : value
@@ -39,8 +41,14 @@ export function AddServer({ onSuccess }) {
 			.then(async resp => {
 				let text = "✅ Szerver hozzáadva 😎"; //
 				let color = "rgba(64, 160, 64, 0.5)";
+				let list = null;
 				if (resp.status === 200) {
 					onSuccess();
+				}
+				else if (resp.status == 400) {
+					let json = await resp.json();
+					let v = Object.values(json).map(x => (<li>{x}</li>));
+					list = (<ol>{v}</ol>);
 				}
 				else if (resp.status === 409) {
 					text = `❌ Ezen a címen (${data.address}) már található regisztrált szerver 😾`;
@@ -52,7 +60,8 @@ export function AddServer({ onSuccess }) {
 				}
 				setMsg({
 					msg: text,
-					color: color
+					color: color,
+					list: list
 				});
 			});
 	};
@@ -146,7 +155,7 @@ export function AddServer({ onSuccess }) {
 					textAlign: "center",
 					fontSize: 16,
 					padding: 4,
-				}}>{msg.msg}</div>
+				}}>{msg.msg}{msg.list !== null && msg.list}</div>
 			</form>
 		</div>
 	)

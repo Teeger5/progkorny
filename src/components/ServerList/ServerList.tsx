@@ -1,51 +1,70 @@
 import Icon from "@mdi/react";
 import {mdiClipboardTextMultiple} from "@mdi/js";
 import {useState} from "react";
-import {SERVERS, setServers} from "../../App.tsx";
+import {SERVERS, setServers, VERSION_NAMES} from "../../App.tsx";
 import {Versions} from "../Versions/Versions.tsx";
-import {getServersFiltered} from "../../Utils.tsx";
+import {getServersFiltered, ServerData, ServerFilters} from "../../Utils.tsx";
+import './ServerList.css';
 
-function ServerView ({ data }) {
-	const onAddressClicked = () => {
-		navigator.clipboard.writeText(`${data.address}:${data.port}`);
-	}
+function ServerAddress({ address, port }) {
+
+	const onAddressClicked = (event) => {
+//		navigator.clipboard.writeText(`${data.address}:${data.port}`);
+		console.log("address: " + event.target.innerText);
+		navigator.clipboard.writeText(event.target.innerText);
+	};
 	return (
-		<div className="serverView" style={{
-			display: "flex",
-			flexFlow: "column",
-			color: "white",
-			backgroundColor: "#334",
-			padding: 8,
-			borderRadius: 8,
-			minWidth: 400,
-			maxWidth: 400
-		}}>
-			<h2>{data.name}</h2>
-			<div>{data.version}</div>
-			<div
-				onClick={onAddressClicked}
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					padding: 8,
-					fontFamily: "monospace",
-					backgroundColor: "#444",
-					borderRadius: 3,
-					cursor: "pointer",
-
-				}}
-			><div
-				style={{
-					flexGrow: 1
-				}}>{data.address}:{data.port}</div>
+		<div
+			onClick={onAddressClicked}
+			className="serverAddress">
+			<div className="serverAddressText">{address}:{port}</div>
+			<div className="iconDiv">
 				<Icon
 					path={mdiClipboardTextMultiple}
-					size={1}
-					style={{
+					size={1}/>
+			</div>
+		</div>
+	)
+}
 
-					}}/></div>
+function ServerView({ data }) {
+	const [editable, setEditable] = useState(true);
+	const [serverData, setServerData] = useState({
+/*		name: data.name,
+		version: data.version,
+		address: data.address,
+		port: data.port,
+		description: data.description*/
+	...data});
+	const handleBlur = (name : string) => (event) => {
+		setServerData(prevData => ({
+			...prevData, [name]: event.target.innerText
+		}));
+		console.log("edit server data: " + serverData);
+	};
+	return (
+		<div className="serverView">
+			<h2
+				suppressContentEditableWarning
+				contentEditable={editable}
+				onBlur={handleBlur("name")}>{data.name}</h2>
+			{
+				editable ?
+				(<select
+					name="version"
+					defaultValue={VERSION_NAMES.length == 0 ? "" : VERSION_NAMES[0]}
+					onBlur={handleBlur("version")}>
+					{VERSION_NAMES.map(k => (
+						<option key={k} value={k}>{k}</option>
+					))}
+				</select>)
+				: (<div>{data.version}</div>)}
+			<ServerAddress address={data.address} port={data.port} />
 			<b>Leírás</b>
-			<div>{data.description}</div>
+			<div
+				contentEditable={editable}
+				suppressContentEditableWarning
+			>{data.description}</div>
 		</div>
 	)
 }

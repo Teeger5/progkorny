@@ -1,0 +1,33 @@
+.serverAddress {
+	display: flex;
+	justify-content: center;
+	padding: 8px;
+	font-family: monospace;
+	background-color: #444;
+	border-radius: 3px;
+	cursor: pointer;
+}
+
+.serverAddressText {
+	flex-grow: 1;
+}
+
+.iconDiv {
+	opacity: 0;
+	transition: opacity 200ms ease;
+}
+
+.serverAddress:hover .iconDiv {
+	opacity: 1; // Az ikon megjelenik, amikor a kurzor a komponens fölött van
+}
+
+.serverView {
+	display: flex;
+	flex-flow: column;
+	color: white;
+	background-color: #334;
+	padding: 8px;
+	border-radius: 8px;
+	min-width: 400px;
+	max-width: 400px;
+}
