@@ -1,0 +1,32 @@
+form {
+	display: flex;
+	flex-flow: column;
+	justify-content: stretch;
+	align-items: stretch;
+	align-content: stretch;
+	gap: 8px;
+	padding: 16px;
+}
+
+input {
+	font-family: monospace;
+}
+
+textarea {
+	border-radius: 8px;
+	padding: 4px;
+}
+
+.flexGrow1 {
+	flex-grow: 1;
+}
+
+.buttonSubmit {
+	background-color: #4a4;
+	cursor: pointer;
+	text-align: center;
+	font-size: 32px;
+	font-weight: bold;
+	border-radius: 8px;
+	padding: 8px;
+}

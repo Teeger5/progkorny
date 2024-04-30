@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import './App.css'
 import {AddServer} from "./components/AddServer/AddServer.tsx";
 import {ServerList} from "./components/ServerList/ServerList.tsx";
-import {getServers, getVersions, ServerData} from "./Utils.tsx";
+import {getServers, getServersFiltered, getVersions, ServerData, ServerFilters} from "./Utils.tsx";
 
 /*
 const versions_ = new Map<string, string>(Object.entries({
@@ -17,8 +17,14 @@ export let VERSIONS = new Map<string, number>();
 
 export let SERVERS = new Array<ServerData>();
 
+export let FILTERS : ServerFilters = {};
+
 export function setServers(servers : Array<ServerData>) {
 	SERVERS = servers;
+}
+
+export function setFilters(filters : ServerFilters) {
+	FILTERS = filters;
 }
 
 export function setVersions(versions : Map<string, number>) {
@@ -39,7 +45,7 @@ export default function App() {
 		setServerList(SERVERS);
 	}
 	const updateServersVersions = () => {
-		getServers(onServersReceived);
+		getServersFiltered(onServersReceived, FILTERS);
 		getVersions(onVersionsReceived);
 	}
 	useEffect(() => {

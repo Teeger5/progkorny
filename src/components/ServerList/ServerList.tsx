@@ -1,7 +1,7 @@
 import Icon from "@mdi/react";
 import {mdiClipboardTextMultiple} from "@mdi/js";
 import {useState} from "react";
-import {SERVERS, setServers, VERSION_NAMES} from "../../App.tsx";
+import {SERVERS, setFilters, setServers, VERSION_NAMES} from "../../App.tsx";
 import {Versions} from "../Versions/Versions.tsx";
 import {getServersFiltered, ServerData, ServerFilters} from "../../Utils.tsx";
 import './ServerList.css';
@@ -52,7 +52,7 @@ function ServerView({ data }) {
 				editable ?
 				(<select
 					name="version"
-					defaultValue={VERSION_NAMES.length == 0 ? "" : VERSION_NAMES[0]}
+					defaultValue={data.version}
 					onBlur={handleBlur("version")}>
 					{VERSION_NAMES.map(k => (
 						<option key={k} value={k}>{k}</option>
@@ -69,7 +69,11 @@ function ServerView({ data }) {
 	)
 }
 
-export function ServerList() {
+interface ServerListProps {
+	updateData : () => void;
+}
+
+export function ServerList({ updateData } : ServerListProps) {
 	const [, setServerList] = useState(new Array<ServerData>());
 	const onVersionSelectionChange = (array : Array<string>) => {
 		let filter : ServerFilters = {
@@ -77,6 +81,7 @@ export function ServerList() {
 			partOfName: "",
 			maxPlayersMax: 0
 		};
+		setFilters(filter);
 		getServersFiltered(array => {
 			setServers(array);
 			setServerList(SERVERS);

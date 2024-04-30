@@ -1,8 +1,30 @@
-import {useState} from "react";
-import {VERSION_NAMES, VERSIONS} from "../../App.tsx";
-import {post} from "../../Utils.tsx";
+import {ChangeEvent, useState} from "react";
+import {VERSION_NAMES} from "../../App.tsx";
+import {post, ServerData} from "../../Utils.tsx";
+import './AddServer.css';
 
-export function AddServer({ onSuccess }) {
+interface VersionSelectProprs {
+	onChange: (event : ChangeEvent<HTMLSelectElement>) => void,
+	defaultOption: number
+}
+
+export function VersionSelect({ onChange, defaultOption } : VersionSelectProprs) {
+	return (
+		<select
+			name="version"
+			defaultValue={VERSION_NAMES.length == 0 ? "" : VERSION_NAMES[defaultOption]}
+			onChange={onChange}>
+			{VERSION_NAMES.map(k => (
+				<option key={k} value={k}>{k}</option>
+			))}
+		</select>
+	)
+}
+
+interface AddServerProps {
+	onSuccess: () => void
+}
+export function AddServer({ onSuccess } : AddServerProps) {
 	const [data, setData] = useState<ServerData>({
 		version: 'null',
 		name: '',
@@ -39,24 +61,28 @@ export function AddServer({ onSuccess }) {
 		console.log("new server data: " + JSON.stringify(data));
 		post("/servers", data)
 			.then(async resp => {
-				let text = "✅ Szerver hozzáadva 😎"; //
-				let color = "rgba(64, 160, 64, 0.5)";
+				let text = "❌ Nem sikerült hozzáadni a szervert 😾";
+				let color = "rgba(160, 64, 64, 1)";
 				let list = null;
 				if (resp.status === 200) {
+					text = "✅ Szerver hozzáadva 😎";
+					color = "rgba(64, 160, 64, 0.5)";
 					onSuccess();
 				}
 				else if (resp.status == 400) {
 					let json = await resp.json();
-					let v = Object.values(json).map(x => (<li>{x}</li>));
-					list = (<ol>{v}</ol>);
+					let v = Object.values(json)
+						.map(x => (<li>{x}</li>));
+					list = (<ul style={{
+						backgroundColor: color
+					}}>{v}</ul>);
 				}
 				else if (resp.status === 409) {
 					text = `❌ Ezen a címen (${data.address}) már található regisztrált szerver 😾`;
-					color = "rgba(160, 64, 64, 0.5)";
 				}
 				else {
 					text = await resp.text();
-					color = "rgba(160, 64, 64, 0.5)";
+//					text += ` (kód: ${resp.status}`;
 				}
 				setMsg({
 					msg: text,
@@ -67,19 +93,9 @@ export function AddServer({ onSuccess }) {
 	};
 	return (
 		<div>
-			<form style={{
-				display: "flex",
-				flexFlow: "column",
-				justifyContent: "stretch",
-				alignItems: "stretch",
-				alignContent: "stretch",
-				gap: 8,
-				padding: 16
-			}}>
+			<form>
 				<table>
-					<tbody style={{
-						display: "table"
-					}}>
+					<tbody>
 					<tr>
 						<td><label>Név:</label></td>
 						<td><input
@@ -97,65 +113,47 @@ export function AddServer({ onSuccess }) {
 					</tr>
 					<tr>
 						<td><label>Verzió:</label></td>
-						<td><select
-							name="version"
-							defaultValue={VERSION_NAMES.length == 0 ? "" : VERSION_NAMES[0]}
-							onChange={handleInputChange}>
-							{VERSION_NAMES.map(k => (
-								<option key={k} value={k}>{k}</option>
-							))}
-						</select></td>
+						<td><VersionSelect onChange={handleInputChange} defaultOption={0} /></td>
 					</tr>
 					<tr>
 						<td><label>Elérés:</label></td>
 						<td style={{
 							display: "flex",
-						}}><input
-							name="address"
-							type="text"
-							onChange={handleInputChange}
-							style={{
-								flexGrow: 1
-							}}/>
+						}}>
+							<input
+								name="address"
+								type="text"
+								placeholder="IP-cím vagy domain"
+								onChange={handleInputChange}
+								className="flexGrow1"/>
 							:<input
 								name="port"
 								type="number"
 								style={{
-									fontFamily: "monospace",
 									width: "5em"
 								}}
 								defaultValue="25565"
+								placeholder="port"
 								onChange={handleInputChange}/></td>
 					</tr>
 					</tbody>
 				</table>
-				<h3>Leírás:</h3>
+				<b>Leírás:</b>
 				<textarea
 					name="description"
 					rows={8}
-					onChange={handleInputChange}
-					style={{
-						borderRadius: 8,
-						padding: 4
-					}}>
+					onChange={handleInputChange}>
 				</textarea>
-				<div
-					style={{
-						backgroundColor: "#4a4",
-						cursor: "pointer",
-						textAlign: "center",
-						fontSize: 32,
-						fontWeight: "bold",
-						borderRadius: 8,
-						padding: 8
-					}}
-					onClick={handleSubmit}>Hozzáadás</div>
+				<button
+					className="buttonSubmit"
+					onClick={handleSubmit}>Hozzáadás</button>
 				<div style={{
 					backgroundColor: msg.color,
 					textAlign: "center",
 					fontSize: 16,
 					padding: 4,
-				}}>{msg.msg}{msg.list !== null && msg.list}</div>
+				}}>{msg.msg}</div>
+				{msg.list !== null && msg.list}
 			</form>
 		</div>
 	)
