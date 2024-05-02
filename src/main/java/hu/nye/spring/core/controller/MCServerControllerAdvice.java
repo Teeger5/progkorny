@@ -1,11 +1,13 @@
 package hu.nye.spring.core.controller;
 
+import hu.nye.spring.core.exceptions.NotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -44,11 +46,14 @@ public class MCServerControllerAdvice extends ResponseEntityExceptionHandler {
 		ex.getBindingResult().getAllErrors().forEach((error) -> {
 			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
-			if (fieldName.equalsIgnoreCase("address") && errorMessage.contains("kifejezés")) {
-				errorMessage = "Nem érvényes IP-cím vagy domain név";
-			}
 			errors.put(fieldName, errorMessage);
 		});
 		return new ResponseEntity(errors, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<String> onNotFoundException(NotFoundException exception) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body(exception.getMessage());
 	}
 }

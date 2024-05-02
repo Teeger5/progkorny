@@ -1,11 +1,7 @@
 package hu.nye.spring.core.request;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +14,9 @@ public class MCServerRequest {
 	private String name;
 
 	@NotBlank(message = "A cím nem lehet üres")
-	@Pattern(regexp = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?!-)[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")
+	@Pattern(
+			regexp = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?!-)[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",
+			message = "Nem érvényes IP-cím vagy domain név")
 	private String address;
 
 	private String description;
@@ -28,10 +26,10 @@ public class MCServerRequest {
 
 	@Min(value = 1, message = "Érvénytelen port")
 	@Max(value = 65535, message = "Érvénytelen port")
-	private int port;
+	private Integer port;
 
 	@Positive(message = "Legalább 1 játékost tudnia kell fogadni a szervernek")
-	private int maxPlayers;
+	private Integer maxPlayers;
 
 	/**
 	 * Elvégez néhány módosítást a beérkezett adatokon:

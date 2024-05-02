@@ -48,11 +48,29 @@ public class MCServerEntity {
 	 * @param request ez adja az új értékeket
 	 */
 	public void updateWith(MCServerRequest request) {
-		this.name = request.getName();
-		this.address = request.getAddress();
-		this.description = request.getDescription();
-		this.port = request.getPort();
-		this.maxPlayers = request.getMaxPlayers();
+		if (request.getName() != null) {
+			this.name = request.getName();
+		}
+		if (request.getDescription() != null) {
+			this.description = request.getDescription();
+		}
+		if (request.getPort() != null) {
+			this.port = request.getPort();
+		}
+		if (request.getMaxPlayers() != null) {
+			this.maxPlayers = request.getMaxPlayers();
+		}
+	}
+
+	public MCServerEntity(MCServerRequest request, MCVersionEntity version) {
+		request.normalize();
+		name = request.getName().strip();
+		address = request.getAddress()
+				.strip().toLowerCase();
+		description = request.getDescription().strip();
+		this.version = version;
+		port = request.getPort();
+		maxPlayers = request.getMaxPlayers();
 	}
 
 	/**

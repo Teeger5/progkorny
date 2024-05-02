@@ -1,27 +1,26 @@
 package hu.nye.spring.core.service;
 
+import hu.nye.spring.core.entity.MCServerEntity;
 import hu.nye.spring.core.entity.MCVersionEntity;
+import hu.nye.spring.core.exceptions.MCServerNotFoundException;
+import hu.nye.spring.core.repistory.IMCServerRepository;
 import hu.nye.spring.core.repistory.IMCVersionRepository;
 import hu.nye.spring.core.repistory.MCServerSpecification;
 import hu.nye.spring.core.request.MCFiltersRequest;
-import org.checkerframework.checker.regex.qual.Regex;
+import hu.nye.spring.core.request.MCServerRequest;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import hu.nye.spring.core.entity.MCServerEntity;
-import hu.nye.spring.core.repistory.IMCServerRepository;
-import hu.nye.spring.core.request.MCServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class MCServerService implements IMCServerService {
 
 	@Autowired
@@ -30,41 +29,35 @@ public class MCServerService implements IMCServerService {
 	@Autowired
 	private IMCVersionRepository mcVersionRepository;
 
-	private static Pattern ADDRESS_IP_REGEX = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
-	private static Pattern ADDRESS_DOMAIN_REGEX = Pattern.compile("^\\d{1,3}\\.[a-b]{2,}");
 	@Override
 	public ResponseEntity saveMCServer(MCServerRequest request) {
+		request.normalize();
 		var version = mcVersionRepository.findByName(request.getVersion())
 				.orElseThrow(() -> new ResponseStatusException(
 						HttpStatus.UNPROCESSABLE_ENTITY,
 						"'" + request.getVersion() + "' verzió nem ismert"));
-		var mcServerEntity = MCServerEntity.fromRequest(request, version);
-		if (ADDRESS_IP_REGEX.matcher(request.getAddress()).matches()) {
-			var valid = Arrays.stream(request.getAddress().split("\\."))
-					.map(x -> Integer.parseInt(x))
-					.allMatch(x -> x >= 0 && x < 256);
-			if (!valid) {
-
-			}
-		}
+//		var mcServerEntity = MCServerEntity.fromRequest(request, version);
 		if (mcServerRepository.existsByAddress(request.getAddress())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body(request.getAddress() + " címen már van regisztrált szerver.");
 		}
-		mcServerRepository.save(mcServerEntity);
+		mcServerRepository.save(new MCServerEntity(request, version));
 		return ResponseEntity.ok("Szerver hozzáadva \uD83D\uDE0E");
 	}
 
 	@Override
 	public MCServerEntity getMCServerById(Long id) {
-		return mcServerRepository.findById(id).orElseThrow();
+		var mcServerEntity = mcServerRepository.findById(id)
+				.orElseThrow(() -> new MCServerNotFoundException(String.valueOf(id)));
+		return mcServerEntity;
 	}
 
 	@Override
-	public MCServerEntity updateMCServer(Long id, MCServerRequest mcServerRequest) {
-		var mcServerEntity = mcServerRepository.findById(id).orElseThrow();
+	public ResponseEntity<String> updateMCServer(String address, MCServerRequest mcServerRequest) {
+		var mcServerEntity = mcServerRepository.findByAddress(address).orElseThrow();
 		mcServerEntity.updateWith(mcServerRequest);
-		return mcServerRepository.save(mcServerEntity);
+		mcServerRepository.save(mcServerEntity);
+		return ResponseEntity.ok("");
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import hu.nye.spring.core.request.MCFiltersRequest;
 import hu.nye.spring.core.request.MCServerRequest;
 import hu.nye.spring.core.service.IMCServerService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @Slf4j
 public class MCServerController {
 
@@ -71,9 +73,9 @@ public class MCServerController {
 		}
 	}
 
-	@PatchMapping("/servers/{id}")
-	public void updateMCServer(@PathVariable("id") Long id, @RequestBody MCServerRequest request) {
-		mcServerService.updateMCServer(id, request);
+	@PatchMapping("/servers/{address}")
+	public void updateMCServer(@PathVariable("address") String address, @RequestBody MCServerRequest request) {
+		mcServerService.updateMCServer(address, request);
 	}
 
 	@GetMapping("/versions")

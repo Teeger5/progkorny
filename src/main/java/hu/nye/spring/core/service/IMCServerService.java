@@ -21,7 +21,7 @@ public interface IMCServerService {
 
 	MCServerEntity getMCServerById(Long id);
 
-	MCServerEntity updateMCServer(Long id, MCServerRequest userRequest);
+	ResponseEntity<String> updateMCServer(String address, MCServerRequest userRequest);
 
 	void deleteMCServerById(Long id);
 
