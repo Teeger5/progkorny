@@ -1,6 +1,6 @@
 package hu.nye.spring.core.entity;
 
-import hu.nye.spring.core.request.MCServerRequest;
+import hu.nye.spring.core.model.dto.MCServerDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,22 +10,18 @@ import lombok.*;
  * A törlés és a frissítés iknább a cím alapján történik majd
  */
 
+@Entity
+@Table(name = "servers")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
-@Table(name = "servers")
+@ToString
 public class MCServerEntity {
 
 	@Getter(AccessLevel.NONE)
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-/*			strategy = GenerationType.AUTO,
-			generator = "native")
-	@GenericGenerator(
-			name = "native",
-			strategy = "native")*/
 	private Long id;
 	@Column(nullable = false, length = 120)
 	private String name;
@@ -45,47 +41,31 @@ public class MCServerEntity {
 	 * Frissíti ennek az objektumnak az értékeit
 	 * a paraméterben megadottal.
 	 * Minden értéket átállít
-	 * @param request ez adja az új értékeket
+	 * @param data ez adja az új értékeket
 	 */
-	public void updateWith(MCServerRequest request) {
-		if (request.getName() != null) {
-			this.name = request.getName();
+	public void updateWith(MCServerDTO data) {
+		if (data.getName() != null) {
+			this.name = data.getName();
 		}
-		if (request.getDescription() != null) {
-			this.description = request.getDescription();
+		if (data.getDescription() != null) {
+			this.description = data.getDescription();
 		}
-		if (request.getPort() != null) {
-			this.port = request.getPort();
+		if (data.getPort() != null) {
+			this.port = data.getPort();
 		}
-		if (request.getMaxPlayers() != null) {
-			this.maxPlayers = request.getMaxPlayers();
+		if (data.getMaxPlayers() != null) {
+			this.maxPlayers = data.getMaxPlayers();
 		}
 	}
 
-	public MCServerEntity(MCServerRequest request, MCVersionEntity version) {
-		request.normalize();
-		name = request.getName().strip();
-		address = request.getAddress()
-				.strip().toLowerCase();
-		description = request.getDescription().strip();
-		this.version = version;
-		port = request.getPort();
-		maxPlayers = request.getMaxPlayers();
-	}
-
-	/**
-	 * Új objektumot hoz létre egy Requestben lévő adatokat felhasználva
-	 * @param request a forrás request
-	 * @return
-	 */
-	public static MCServerEntity fromRequest (MCServerRequest request, MCVersionEntity version) {
-		return new MCServerEntity(
-				null,
-				request.getName(),
-				request.getAddress(),
-				request.getDescription(),
+	public MCServerEntity(MCServerDTO data, MCVersionEntity version) {
+		this(null,
+				data.getName(),
+				data.getAddress(),
+				data.getDescription(),
 				version,
-				request.getPort(),
-				request.getMaxPlayers());
+				data.getPort(),
+				data.getMaxPlayers()
+		);
 	}
 }

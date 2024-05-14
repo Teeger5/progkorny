@@ -122,6 +122,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -147,15 +148,14 @@
 				<version>0.8.11</version>
 				<configuration>
 					<excludes>
-						<exclude>hu/nye/pandragon/wumpus/model/**/*</exclude>
-						<exclude>hu/nye/pandragon/wumpus/Main.*</exclude>
-						<exclude>/hu/nye/pandragon/wumpus/service/traits/*</exclude>
-						<exclude>/hu/nye/pandragon/wumpus/service/command/impl/gameplay/GameSaveCommand**</exclude>
-						<exclude>/hu/nye/pandragon/wumpus/ui/*Wrapper.*</exclude>
-						<exclude>/hu/nye/pandragon/wumpus/ui/GameMainScreen*</exclude>
-						<exclude>/hu/nye/pandragon/wumpus/persistence/**</exclude>
-						<exclude>/hu/nye/pandragon/wumpus/xml/model/*</exclude>
-						<exclude>/hu/nye/pandragon/wumpus/json/model/*</exclude>
+						<exclude>hu/nye/spring/core/model/**</exclude>
+						<exclude>hu/nye/spring/core/repository/*</exclude>
+						<exclude>hu/nye/spring/core/exceptions/*</exclude>
+						<exclude>hu/nye/spring/core/request/*</exclude>
+						<exclude>hu/nye/spring/core/Main.*</exclude>
+						<exclude>hu/nye/spring/core/configuration/*</exclude>
+						<exclude>hu/nye/spring/core/entity/*</exclude>
+						<exclude>hu/nye/spring/core/controller/*Advice.*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -184,7 +184,7 @@
 										<limit>
 											<counter>LINE</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.0</minimum>
+											<minimum>0.01</minimum>
 										</limit>
 									</limits>
 								</rule>
@@ -192,6 +192,24 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>checkstyle</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -201,13 +219,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>3.3.1</version>
 				<configuration>
 					<configLocation>checkstyle.xml</configLocation>
-					<encoding>UTF-8</encoding>
 					<consoleOutput>true</consoleOutput>
 					<failsOnError>false</failsOnError>
-					<linkXRef>false</linkXRef>
+					<linkXRef>true</linkXRef>
 				</configuration>
 				<reportSets>
 					<reportSet>

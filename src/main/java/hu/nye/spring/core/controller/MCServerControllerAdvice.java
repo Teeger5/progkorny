@@ -1,6 +1,7 @@
 package hu.nye.spring.core.controller;
 
 import hu.nye.spring.core.exceptions.NotFoundException;
+import hu.nye.spring.core.exceptions.UnprocessableEntityException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -53,7 +54,16 @@ public class MCServerControllerAdvice extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<String> onNotFoundException(NotFoundException exception) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+		return getExceptionResponse(exception, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(UnprocessableEntityException.class)
+	public ResponseEntity<String> onUnprocessableEntityException(UnprocessableEntityException exception) {
+		return getExceptionResponse(exception, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+
+	private ResponseEntity<String> getExceptionResponse(Exception exception, HttpStatus status) {
+		return ResponseEntity.status(status)
 				.body(exception.getMessage());
 	}
 }

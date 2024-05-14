@@ -1,6 +1,6 @@
 package hu.nye.spring.core.controller;
 
-import hu.nye.spring.core.entity.MCServerEntity;
+import hu.nye.spring.core.model.dto.MCServerDTO;
 import hu.nye.spring.core.request.MCFiltersRequest;
 import hu.nye.spring.core.request.MCServerRequest;
 import hu.nye.spring.core.service.IMCServerService;
@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +19,7 @@ import java.util.List;
 public class MCServerController {
 
 	@Autowired
-	private IMCServerService mcServerService;
+	private final IMCServerService mcServerService;
 
 	/**
 	 * Új szerver hozzáadása
@@ -40,7 +39,7 @@ public class MCServerController {
 	 * @return
 	 */
 	@GetMapping("/servers")
-	public List<MCServerEntity> getAllMCServers(
+	public List<MCServerDTO> getAllMCServers(
 			@RequestParam(value = "v", required = false) List<String> versions,
 			@RequestParam(value = "maxPlayersMax", required = false) Integer maxPlayersMax,
 			@RequestParam(value = "maxPlayersMin", required = false) Integer maxPlayersMin,
@@ -55,22 +54,13 @@ public class MCServerController {
 	 * GET /servers/{id}
 	 */
 	@GetMapping("/servers/{id}")
-	public MCServerEntity getMCServerById(@PathVariable("id") Long id) {
+	public MCServerDTO getMCServerById(@PathVariable("id") Long id) {
 		return mcServerService.getMCServerById(id);
 	}
 
 	@DeleteMapping("/servers/{address}")
-	public ResponseEntity<Object> eleteMCServerByAddress(@PathVariable("address") String address) {
-		if (!mcServerService.existsByAddress(address)) {
-			mcServerService.deleteMCServerByAddress(address);
-			if (mcServerService.existsByAddress(address)) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).build();
-			}
-			return ResponseEntity.ok().build();
-		}
-		else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		}
+	public void deleteMCServerByAddress(@PathVariable("address") String address) {
+		mcServerService.deleteMCServerByAddress(address);
 	}
 
 	@PatchMapping("/servers/{address}")

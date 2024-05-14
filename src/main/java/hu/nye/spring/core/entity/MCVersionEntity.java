@@ -1,12 +1,14 @@
 package hu.nye.spring.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
+import lombok.ToString;
 
 /**
  * Ez az osztály a versions táblát írja le
@@ -16,18 +18,18 @@ import java.util.Set;
 @Table(name = "versions")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class MCVersionEntity {
 
 	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	@Getter
 	@Column(nullable = false, unique = true, length = 32)
 	private String name;
 
-	@OneToMany(mappedBy = "version")
-	private Set<MCServerEntity> servers;
+//	@OneToMany(mappedBy = "version")
+//	private Set<MCServerEntity> servers;
 
 	/**
 	 * Ez megváltozataja a JSON-reprezentációját az objektumnak
@@ -39,5 +41,9 @@ public class MCVersionEntity {
 	@JsonValue
 	public String getName() {
 		return name;
+	}
+
+	public MCVersionEntity(String name) {
+		this.name = name;
 	}
 }

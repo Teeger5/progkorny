@@ -3,9 +3,11 @@ package hu.nye.spring.core.service;
 import hu.nye.spring.core.entity.MCServerEntity;
 import hu.nye.spring.core.entity.MCVersionEntity;
 import hu.nye.spring.core.exceptions.MCServerNotFoundException;
-import hu.nye.spring.core.repistory.IMCServerRepository;
-import hu.nye.spring.core.repistory.IMCVersionRepository;
-import hu.nye.spring.core.repistory.MCServerSpecification;
+import hu.nye.spring.core.exceptions.UnknownMCServerVersionException;
+import hu.nye.spring.core.model.dto.MCServerDTO;
+import hu.nye.spring.core.repository.IMCServerRepository;
+import hu.nye.spring.core.repository.IMCVersionRepository;
+import hu.nye.spring.core.repository.MCServerSpecification;
 import hu.nye.spring.core.request.MCFiltersRequest;
 import hu.nye.spring.core.request.MCServerRequest;
 import lombok.AllArgsConstructor;
@@ -14,7 +16,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,50 +25,53 @@ import java.util.stream.Collectors;
 public class MCServerService implements IMCServerService {
 
 	@Autowired
-	private IMCServerRepository mcServerRepository;
+	private final IMCServerRepository mcServerRepository;
 
 	@Autowired
-	private IMCVersionRepository mcVersionRepository;
+	private final IMCVersionRepository mcVersionRepository;
 
 	@Override
 	public ResponseEntity saveMCServer(MCServerRequest request) {
 		request.normalize();
 		var version = mcVersionRepository.findByName(request.getVersion())
-				.orElseThrow(() -> new ResponseStatusException(
-						HttpStatus.UNPROCESSABLE_ENTITY,
-						"'" + request.getVersion() + "' verzió nem ismert"));
-//		var mcServerEntity = MCServerEntity.fromRequest(request, version);
+				.orElseThrow(() -> new UnknownMCServerVersionException(request.getVersion()));
 		if (mcServerRepository.existsByAddress(request.getAddress())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body(request.getAddress() + " címen már van regisztrált szerver.");
 		}
-		mcServerRepository.save(new MCServerEntity(request, version));
-		return ResponseEntity.ok("Szerver hozzáadva \uD83D\uDE0E");
+		mcServerRepository.save(new MCServerEntity(new MCServerDTO(request), version));
+		return ResponseEntity.ok("Szerver hozzáadva");
 	}
 
 	@Override
-	public MCServerEntity getMCServerById(Long id) {
+	public MCServerDTO getMCServerById(Long id) {
 		var mcServerEntity = mcServerRepository.findById(id)
 				.orElseThrow(() -> new MCServerNotFoundException(String.valueOf(id)));
-		return mcServerEntity;
+		return new MCServerDTO(mcServerEntity);
 	}
 
 	@Override
-	public ResponseEntity<String> updateMCServer(String address, MCServerRequest mcServerRequest) {
-		var mcServerEntity = mcServerRepository.findByAddress(address).orElseThrow();
-		mcServerEntity.updateWith(mcServerRequest);
+	public void updateMCServer(String address, MCServerRequest request) {
+		var mcServerEntity = mcServerRepository.findByAddress(address)
+				.orElseThrow(() -> new MCServerNotFoundException(address));
+		mcServerEntity.updateWith(new MCServerDTO(request));
 		mcServerRepository.save(mcServerEntity);
-		return ResponseEntity.ok("");
 	}
 
 	@Override
 	public void deleteMCServerById(Long id) {
+		if (!mcServerRepository.existsById(id)) {
+			throw new MCServerNotFoundException();
+		}
 		mcServerRepository.deleteById(id);
 	}
 
 	@Override
 	public void deleteMCServerByAddress(String address) {
-
+		if (!mcServerRepository.existsByAddress(address)) {
+			throw new MCServerNotFoundException(address);
+		}
+		mcServerRepository.deleteByAddress(address);
 	}
 
 	@Override
@@ -80,33 +84,27 @@ public class MCServerService implements IMCServerService {
 
 	@Override
 	public List<Object[]> getMCServerCountsByVersions() {
-/*		var versions = mcServerRepository.countServersByAllVersions();
-		var objectMapper = new ObjectMapper();
-		var jsonObject = objectMapper.createObjectNode();
-
-		for (var obj : versions) {
-			jsonObject.put((String) obj[0], (Long) obj[1]);
-		}
-		return ResponseEntity.ok(jsonObject.toString());*/
 		return mcServerRepository.countServersByAllVersions();
 	}
 
-	public List<MCServerEntity> getAllMCServers() {
-		return ((List<MCServerEntity>) mcServerRepository.findAll());
+	public List<MCServerDTO> getAllMCServers() {
+		return mcServerEntityToDTO((List<MCServerEntity>) mcServerRepository.findAll());
 	}
 
 	@Override
-	public List<MCServerEntity> getMCServersByFilters (MCFiltersRequest request) {
+	public List<MCServerDTO> getMCServersByFilters(MCFiltersRequest request) {
 		if (request.getVersions() != null && !request.getVersions().isEmpty()) {
 			var specification = Specification.where(MCServerSpecification
 					.hasVersion(mcVersionRepository.findAllByName(request.getVersions())));
-			return mcServerRepository.findAll(specification);
+			return mcServerEntityToDTO(mcServerRepository.findAll(specification));
 		}
 		return getAllMCServers();
 	}
 
-	@Override
-	public boolean existsByAddress(String address) {
-		return mcServerRepository.existsByAddress(address);
+	private static List<MCServerDTO> mcServerEntityToDTO(List<MCServerEntity> entities) {
+		return entities
+				.stream()
+				.map(x -> new MCServerDTO(x))
+				.collect(Collectors.toUnmodifiableList());
 	}
 }

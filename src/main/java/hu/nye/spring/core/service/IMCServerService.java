@@ -1,6 +1,6 @@
 package hu.nye.spring.core.service;
 
-import hu.nye.spring.core.entity.MCServerEntity;
+import hu.nye.spring.core.model.dto.MCServerDTO;
 import hu.nye.spring.core.request.MCFiltersRequest;
 import hu.nye.spring.core.request.MCServerRequest;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ public interface IMCServerService {
 	 */
 	ResponseEntity saveMCServer(MCServerRequest userRequest);
 
-	MCServerEntity getMCServerById(Long id);
+	MCServerDTO getMCServerById(Long id);
 
-	ResponseEntity<String> updateMCServer(String address, MCServerRequest userRequest);
+	void updateMCServer(String address, MCServerRequest userRequest);
 
 	void deleteMCServerById(Long id);
 
@@ -31,9 +31,7 @@ public interface IMCServerService {
 
 	List<Object[]> getMCServerCountsByVersions();
 
-	List<MCServerEntity> getAllMCServers();
+	List<MCServerDTO> getAllMCServers();
 
-	List<MCServerEntity> getMCServersByFilters(MCFiltersRequest request);
-
-	boolean existsByAddress(String address);
+	List<MCServerDTO> getMCServersByFilters(MCFiltersRequest request);
 }

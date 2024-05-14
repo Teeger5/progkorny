@@ -1,4 +1,4 @@
-package hu.nye.spring.core.repistory;
+package hu.nye.spring.core.repository;
 
 import hu.nye.spring.core.entity.MCServerEntity;
 import hu.nye.spring.core.entity.MCVersionEntity;
@@ -44,4 +44,6 @@ public interface IMCServerRepository extends CrudRepository<MCServerEntity, Long
     List<Object[]> countServersByAllVersions();
 
     Optional<MCServerEntity> findByAddress(String address);
+
+    void deleteByAddress(String address);
 }
