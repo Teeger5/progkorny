@@ -1,10 +1,7 @@
 package hu.nye.spring.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +24,6 @@ public class MCVersionEntity {
 	@Getter
 	@Column(nullable = false, unique = true, length = 32)
 	private String name;
-
-//	@OneToMany(mappedBy = "version")
-//	private Set<MCServerEntity> servers;
 
 	/**
 	 * Ez megváltozataja a JSON-reprezentációját az objektumnak
