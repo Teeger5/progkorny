@@ -31,17 +31,4 @@ public class MCServerRequest {
 
 	@Positive(message = "Legalább 1 játékost tudnia kell fogadni a szervernek")
 	private Integer maxPlayers;
-
-	/**
-	 * Elvégez néhány módosítást a beérkezett adatokon:
-	 * - .trim() metódus a szöveges adatokra
-	 * - .toLowerCase() a címre
-	 * A számadatokat az annotációk ellenőrzik,
-	 * A szövegeket speciálisabban is kell
-	 */
-	public void normalize() {
-		name = name.strip();
-		description = description.strip();
-		address = address.strip().toLowerCase();
-	}
 }

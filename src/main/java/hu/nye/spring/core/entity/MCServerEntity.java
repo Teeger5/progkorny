@@ -37,27 +37,6 @@ public class MCServerEntity {
 	@Column(name = "max_players", nullable = false)
 	private Integer maxPlayers;
 
-	/**
-	 * Frissíti ennek az objektumnak az értékeit
-	 * a paraméterben megadottal.
-	 * Minden értéket átállít
-	 * @param data ez adja az új értékeket
-	 */
-	public void updateWith(MCServerDTO data) {
-		if (data.getName() != null) {
-			this.name = data.getName();
-		}
-		if (data.getDescription() != null) {
-			this.description = data.getDescription();
-		}
-		if (data.getPort() != null) {
-			this.port = data.getPort();
-		}
-		if (data.getMaxPlayers() != null) {
-			this.maxPlayers = data.getMaxPlayers();
-		}
-	}
-
 	public MCServerEntity(MCServerDTO data, MCVersionEntity version) {
 		this(null,
 				data.getName(),

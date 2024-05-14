@@ -7,6 +7,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Ez az osztály egy Minecraft-szervert ír le
+ * A konstruktorban elvégez néhány módosítást az adatokon:
+ * - .strip() metódus a szöveges adatokra
+ * - .toLowerCase() a címre
+ */
 @AllArgsConstructor
 @Getter
 @ToString

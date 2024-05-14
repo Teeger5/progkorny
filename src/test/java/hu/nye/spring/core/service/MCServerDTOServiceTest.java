@@ -84,14 +84,18 @@ class MCServerDTOServiceTest {
 
 	@Test
 	public void shouldGetMCServerByIdFound() {
-		Long id = 1L;
+		Long id = 2l;
+		var version = new MCVersionEntity("1.19.2");
 		MCServerEntity mcServerEntity = new MCServerEntity();
+		mcServerEntity.setId(2l);
+		mcServerEntity.setVersion(version);
 		when(mcServerRepository.findById(id)).thenReturn(Optional.of(mcServerEntity));
 
+		var expected = new MCServerDTO(mcServerEntity);
 		MCServerDTO result = mcServerService.getMCServerById(id);
 
 		assertNotNull(result);
-		assertEquals(mcServerEntity, result);
+		assertEquals(expected, result);
 	}
 
 	@Test

@@ -43,6 +43,10 @@ public class MCVersionEntity {
 		return name;
 	}
 
+	/**
+	 * Teszteléskor hasznos
+	 * @param name verzió neve
+	 */
 	public MCVersionEntity(String name) {
 		this.name = name;
 	}

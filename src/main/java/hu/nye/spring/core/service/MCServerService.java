@@ -32,14 +32,14 @@ public class MCServerService implements IMCServerService {
 
 	@Override
 	public ResponseEntity saveMCServer(MCServerRequest request) {
-		request.normalize();
-		var version = mcVersionRepository.findByName(request.getVersion())
-				.orElseThrow(() -> new UnknownMCServerVersionException(request.getVersion()));
-		if (mcServerRepository.existsByAddress(request.getAddress())) {
+		var serverDTO = new MCServerDTO(request);
+		var version = mcVersionRepository.findByName(serverDTO.getVersion())
+				.orElseThrow(() -> new UnknownMCServerVersionException(serverDTO.getVersion()));
+		if (mcServerRepository.existsByAddress(serverDTO.getAddress())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body(request.getAddress() + " címen már van regisztrált szerver.");
 		}
-		mcServerRepository.save(new MCServerEntity(new MCServerDTO(request), version));
+		mcServerRepository.save(new MCServerEntity(serverDTO, version));
 		return ResponseEntity.ok("Szerver hozzáadva");
 	}
 
@@ -54,7 +54,10 @@ public class MCServerService implements IMCServerService {
 	public void updateMCServer(String address, MCServerRequest request) {
 		var mcServerEntity = mcServerRepository.findByAddress(address)
 				.orElseThrow(() -> new MCServerNotFoundException(address));
-		mcServerEntity.updateWith(new MCServerDTO(request));
+		mcServerEntity.setName(request.getName());
+		mcServerEntity.setDescription(request.getDescription());
+		mcServerEntity.setPort(request.getPort());
+		mcServerEntity.setMaxPlayers(request.getMaxPlayers());
 		mcServerRepository.save(mcServerEntity);
 	}
 
