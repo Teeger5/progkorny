@@ -11,14 +11,22 @@
 		<relativePath/>
 	</parent>
 
-	<groupId>hu.nye.spring</groupId>
-	<artifactId>core</artifactId>
+	<groupId>hu.nye.pandragon</groupId>
+	<artifactId>minecraft-servers</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Github Packages</name>
+			<url>https://maven.pkg.github.com/Teeger5/progkorny</url>
+		</repository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
