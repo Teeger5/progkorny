@@ -163,7 +163,7 @@
 						<exclude>hu/nye/pandragon/mcservers/Main.*</exclude>
 						<exclude>hu/nye/pandragon/mcservers/configuration/*</exclude>
 						<exclude>hu/nye/pandragon/mcservers/entity/*</exclude>
-						<exclude>hu/nye/pandragon/mcservers/controller/*Advice.*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/controller/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -192,7 +192,7 @@
 										<limit>
 											<counter>LINE</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.01</minimum>
+											<minimum>0.8</minimum>
 										</limit>
 									</limits>
 								</rule>
