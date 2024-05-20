@@ -1,10 +1,9 @@
 package hu.nye.pandragon.mcservers.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hu.nye.pandragon.mcservers.entity.MCServerEntity;
 import hu.nye.pandragon.mcservers.model.dto.MCServerDTO;
-import hu.nye.pandragon.mcservers.request.MCServerRequest;
 import hu.nye.pandragon.mcservers.request.MCFiltersRequest;
+import hu.nye.pandragon.mcservers.request.MCServerRequest;
 import hu.nye.pandragon.mcservers.service.IMCServerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,8 +116,7 @@ class MCServerDTOControllerTest {
 
 	@Test
 	public void whenVParameterIsEmpty_thenGetAllServers() throws Exception {
-		List<MCServerDTO> filteredServers = Arrays.asList(2, 3, 4).stream()
-				.map(x -> new MCServerDTO());
+		List<MCServerDTO> filteredServers = new ArrayList<>();
 		given(mcServerService.getMCServersByFilters(new MCFiltersRequest(new ArrayList<>(), null, null, null))).willReturn(filteredServers);
 
 		mockMvc.perform(get("/servers").param("v", ""))
