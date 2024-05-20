@@ -119,7 +119,7 @@
 							<archive>
 								<manifest>
 									<mainClass>
-										hu.nye.pandragon.wumpus.Main
+										hu.nye.pandragon.mcservers.Main
 									</mainClass>
 								</manifest>
 							</archive>
@@ -156,14 +156,14 @@
 				<version>0.8.11</version>
 				<configuration>
 					<excludes>
-						<exclude>hu/nye/spring/core/model/**</exclude>
-						<exclude>hu/nye/spring/core/repository/*</exclude>
-						<exclude>hu/nye/spring/core/exceptions/*</exclude>
-						<exclude>hu/nye/spring/core/request/*</exclude>
-						<exclude>hu/nye/spring/core/Main.*</exclude>
-						<exclude>hu/nye/spring/core/configuration/*</exclude>
-						<exclude>hu/nye/spring/core/entity/*</exclude>
-						<exclude>hu/nye/spring/core/controller/*Advice.*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/model/**</exclude>
+						<exclude>hu/nye/pandragon/mcservers/repository/*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/exceptions/*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/request/*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/Main.*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/configuration/*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/entity/*</exclude>
+						<exclude>hu/nye/pandragon/mcservers/controller/*Advice.*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
