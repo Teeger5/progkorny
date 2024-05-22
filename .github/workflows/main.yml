@@ -34,7 +34,9 @@ jobs:
           # Overwrite local artifact version
           mvn -B versions:set -DnewVersion="$version" --file pom.xml
           mvn -B deploy --file pom.xml
-          cp "target/minecraft-servers-${version}.jar" "target/minecraft-servers.jar"
+          cp "target/minecraft-servers-${version}.jar" "target/minecraft-servers-1.0-SNAPSHOT.jar"
+          echo "target/minecraft-servers-${version}.jar"
+          ls -lha target
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set Docker image name to lowercase
