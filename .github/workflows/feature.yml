@@ -39,6 +39,8 @@ jobs:
                   mvn -B versions:set -DnewVersion="$version" --file pom.xml
                   mvn -B deploy --file pom.xml
                   cp "target/minecraft-servers-${version}.jar" "target/minecraft-servers.jar"
+                  echo "target/minecraft-servers-${version}.jar"
+                  ls -lha target
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: List files in target directory
