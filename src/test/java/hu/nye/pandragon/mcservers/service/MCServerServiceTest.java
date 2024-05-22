@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @Slf4j
-class MCServerDTOServiceTest {
+class MCServerServiceTest {
 
 	@Mock
 	private IMCServerRepository mcServerRepository;
