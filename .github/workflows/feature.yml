@@ -41,9 +41,8 @@ jobs:
                   cp "target/minecraft-servers-${version}.jar" "target/minecraft-servers.jar"
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            -   name: List files in target directory
-                run: ls -al target
+            - name: List files in target directory
+              run: ls -lha target
             - name: Log in to the Container registry
               uses: docker/login-action@v2
               with:
