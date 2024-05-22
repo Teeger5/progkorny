@@ -6,7 +6,7 @@ on:
 
 env:
   DOCKER_REGISTRY: ghcr.io
-  DOCKER_IMAGE_NAME: ${{ github.repository }}
+  ORIGINAL_DOCKER_IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
@@ -37,7 +37,6 @@ jobs:
           cp "target/minecraft-servers-${version}.jar" "target/minecraft-servers.jar"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Convert Docker image name to lowercase
         run: echo "DOCKER_IMAGE_NAME=${{ env.ORIGINAL_DOCKER_IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_ENV
       - name: Log in to the Container registry
