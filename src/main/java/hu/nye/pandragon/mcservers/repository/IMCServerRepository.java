@@ -2,6 +2,7 @@ package hu.nye.pandragon.mcservers.repository;
 
 import hu.nye.pandragon.mcservers.entity.MCServerEntity;
 import hu.nye.pandragon.mcservers.entity.MCVersionEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -45,5 +46,6 @@ public interface IMCServerRepository extends CrudRepository<MCServerEntity, Long
 
     Optional<MCServerEntity> findByAddress(String address);
 
+    @Transactional
     void deleteByAddress(String address);
 }
